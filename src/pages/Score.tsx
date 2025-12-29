@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -7,7 +8,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Lock, Info, X, ArrowRight } from "lucide-react";
+import { Lock, Info, X, ArrowRight, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const categories = [
   {
@@ -57,9 +60,37 @@ const lockedFeatures = [
 ];
 
 export default function ScorePage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
   const totalScore = categories.reduce((acc, cat) => acc + cat.score, 0);
   const maxScore = categories.reduce((acc, cat) => acc + cat.maxScore, 0);
   const percentage = Math.round((totalScore / maxScore) * 100);
+
+  const handleCheckout = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-payment");
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast({
+        title: "Checkout failed",
+        description: "Unable to start checkout. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -203,11 +234,23 @@ export default function ScorePage() {
                     <p className="text-muted-foreground">
                       Unlock full AI analysis, rebuild strategy, and market-aligned fixes
                     </p>
-                    <Button asChild variant="premium" size="lg">
-                      <Link to="/pricing">
-                        Unlock Pro Analysis
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
+                    <Button
+                      onClick={handleCheckout}
+                      disabled={isLoading}
+                      variant="premium"
+                      size="lg"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Opening checkout...
+                        </>
+                      ) : (
+                        <>
+                          Unlock Pro Analysis
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </>
+                      )}
                     </Button>
                     <p className="text-xs text-muted-foreground">
                       Secure one-time payment via Stripe. No subscriptions.

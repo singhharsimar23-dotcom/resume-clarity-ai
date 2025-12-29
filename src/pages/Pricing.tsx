@@ -1,8 +1,11 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { Check, Lock, CreditCard, Shield } from "lucide-react";
+import { Check, Lock, CreditCard, Shield, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const freeFeatures = [
   "Overall resume score",
@@ -21,6 +24,44 @@ const proFeatures = [
 ];
 
 export default function PricingPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+
+  // Show toast if payment was canceled
+  if (searchParams.get("payment") === "canceled") {
+    toast({
+      title: "Payment canceled",
+      description: "No charges were made. You can try again when ready.",
+    });
+  }
+
+  const handleCheckout = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-payment");
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        throw new Error("No checkout URL received");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast({
+        title: "Checkout failed",
+        description: "Unable to start checkout. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
@@ -85,8 +126,21 @@ export default function PricingPage() {
                 ))}
               </ul>
 
-              <Button asChild variant="premium" size="lg" className="mt-8 w-full">
-                <Link to="/report">Unlock with Stripe</Link>
+              <Button
+                onClick={handleCheckout}
+                disabled={isLoading}
+                variant="premium"
+                size="lg"
+                className="mt-8 w-full"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Opening checkout...
+                  </>
+                ) : (
+                  "Unlock with Stripe"
+                )}
               </Button>
             </div>
           </div>
