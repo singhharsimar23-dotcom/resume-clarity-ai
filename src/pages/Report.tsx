@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useAnalysisStore } from "@/stores/analysis-store";
 
 const navItems = [
   { id: "summary", label: "Summary", icon: FileText },
@@ -25,103 +26,18 @@ const navItems = [
   { id: "action", label: "Action Plan", icon: CheckSquare },
 ];
 
-const failureCauses = [
-  {
-    title: "Outdated Hiring Signals",
-    description:
-      "Your resume uses formatting and language patterns from 2018-2020 that modern ATS systems and recruiters now flag as low-priority. The objective statement format, skills-first layout, and lack of quantified achievements signal inexperience with current hiring expectations.",
-    severity: "critical",
-  },
-  {
-    title: "Academic vs. Professional Framing",
-    description:
-      "Experience is described using academic language ('assisted with', 'participated in', 'learned about') rather than professional impact language ('delivered', 'increased', 'reduced'). This signals you haven't transitioned to workplace communication norms.",
-    severity: "critical",
-  },
-  {
-    title: "Missing Proof-of-Work",
-    description:
-      "No projects, GitHub links, or portfolio entries. In 2024+ hiring, especially for entry-level roles, proof-of-work (side projects, open source, certifications) compensates for limited experience. Your resume provides no evidence of initiative.",
-    severity: "warning",
-  },
-  {
-    title: "Keyword Mismatch",
-    description:
-      "Target role keywords appear only 12% of the time across your resume. ATS systems typically require 40-60% keyword match to surface resumes. You're being filtered before any human sees your application.",
-    severity: "critical",
-  },
-];
-
-const rebuildSections = [
-  {
-    section: "Summary",
-    before:
-      "Motivated computer science student seeking an entry-level position where I can apply my skills and learn new technologies.",
-    after:
-      "Software engineer with hands-on experience building full-stack applications using React, Node.js, and PostgreSQL. Delivered 3 production projects including an e-commerce platform processing 500+ daily transactions. Seeking backend-focused roles in fintech or developer tools.",
-    explanation:
-      "The new summary leads with competency, includes specific tech stack, provides proof (3 production projects), quantifies impact (500+ transactions), and targets specific industries.",
-  },
-  {
-    section: "Experience Bullet",
-    before: "Helped the team with various coding tasks and attended weekly meetings.",
-    after:
-      "Developed automated testing suite that reduced QA cycle time by 40%, enabling faster feature releases across 3 product teams.",
-    explanation:
-      "Transformed from passive assistance language to active ownership. Added quantified impact (40% reduction), scope (3 teams), and business outcome (faster releases).",
-  },
-  {
-    section: "Skills Section",
-    before: "Programming languages: Python, Java, JavaScript. Familiar with databases and web development.",
-    after:
-      "Technical: Python (3 yrs), TypeScript/React (2 yrs), PostgreSQL, AWS Lambda, Docker. Tools: Git, Jira, Figma. Methodologies: Agile/Scrum, CI/CD, Test-Driven Development.",
-    explanation:
-      "Added proficiency levels, specific technologies instead of categories, and methodologies that signal professional readiness.",
-  },
-];
-
-const actionItems = [
-  {
-    priority: "high",
-    title: "Rewrite all experience bullets using CAR format",
-    description:
-      "Challenge-Action-Result format ensures every bullet demonstrates impact. Spend 2-3 hours converting existing bullets.",
-    timeframe: "This week",
-  },
-  {
-    priority: "high",
-    title: "Add 2-3 proof-of-work projects",
-    description:
-      "Create or document personal projects with live links. Even simple CRUD apps with clean code show initiative.",
-    timeframe: "2 weeks",
-  },
-  {
-    priority: "medium",
-    title: "Run keyword analysis on 5 target job postings",
-    description:
-      "Extract common requirements and weave them naturally into your resume. Aim for 45%+ keyword match.",
-    timeframe: "This week",
-  },
-  {
-    priority: "medium",
-    title: "Update formatting to 2024 standards",
-    description:
-      "Single column, ATS-friendly fonts (Arial/Calibri), clear section headers, no tables or graphics.",
-    timeframe: "Today",
-  },
-  {
-    priority: "low",
-    title: "Get 2 peer reviews from industry professionals",
-    description:
-      "Ask developers or hiring managers to review. Fresh eyes catch blind spots you'll miss.",
-    timeframe: "Ongoing",
-  },
-];
+function getScoreColor(score: number): string {
+  if (score < 30) return "text-destructive";
+  if (score < 60) return "text-warning";
+  return "text-success";
+}
 
 export default function ReportPage() {
   const [activeSection, setActiveSection] = useState("summary");
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const analysis = useAnalysisStore((state) => state.analysis);
 
   useEffect(() => {
     if (searchParams.get("payment") === "success") {
@@ -131,6 +47,77 @@ export default function ReportPage() {
       });
     }
   }, [searchParams, toast]);
+
+  // If no analysis, redirect to upload
+  if (!analysis) {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <Header />
+        <main className="flex flex-1 items-center justify-center py-12">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-foreground">No Analysis Found</h1>
+            <p className="mt-2 text-muted-foreground">
+              Please upload your resume to get an AI analysis.
+            </p>
+            <Button
+              onClick={() => navigate("/upload")}
+              variant="hero"
+              size="lg"
+              className="mt-6"
+            >
+              Upload Resume
+            </Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  const failureCauses = analysis.failure_reasons.map((reason, index) => ({
+    title: `Issue ${index + 1}`,
+    description: reason,
+    severity: index < 2 ? "critical" : "warning",
+  }));
+
+  const rebuildSections = analysis.rebuild_roadmap.experience_improvements.length > 0
+    ? analysis.rebuild_roadmap.experience_improvements.map((improvement, index) => ({
+        section: `Experience Bullet ${index + 1}`,
+        before: improvement.original,
+        after: improvement.improved,
+        explanation: "Transformed from passive assistance language to active ownership with quantified impact.",
+      }))
+    : [
+        {
+          section: "Summary",
+          before: analysis.rebuild_roadmap.summary_rewrite.issue || "Current summary lacks specificity",
+          after: analysis.rebuild_roadmap.summary_rewrite.suggestion || "Improved summary with measurable impact",
+          explanation: "The new summary leads with competency, includes specific achievements, and targets specific roles.",
+        },
+      ];
+
+  const actionItems = analysis.rebuild_roadmap.action_items.length > 0
+    ? analysis.rebuild_roadmap.action_items
+    : [
+        {
+          priority: "high" as const,
+          title: "Rewrite all experience bullets using CAR format",
+          description: "Challenge-Action-Result format ensures every bullet demonstrates impact.",
+          timeframe: "This week",
+        },
+        {
+          priority: "high" as const,
+          title: "Add proof-of-work projects",
+          description: "Create or document personal projects with live links to show initiative.",
+          timeframe: "2 weeks",
+        },
+        {
+          priority: "medium" as const,
+          title: "Run keyword analysis on target job postings",
+          description: "Extract common requirements and weave them naturally into your resume.",
+          timeframe: "This week",
+        },
+      ];
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -191,27 +178,32 @@ export default function ReportPage() {
                   <h2 className="text-xl font-semibold text-foreground">Executive Summary</h2>
                   <div className="mt-6 space-y-4 text-muted-foreground">
                     <p>
-                      This resume scored <strong className="text-destructive">29/100</strong>,
-                      placing it in the bottom 15% of resumes analyzed. The primary issues
+                      This resume scored <strong className={getScoreColor(analysis.overall_score)}>{analysis.overall_score}/100</strong>,
+                      {analysis.overall_score < 30 
+                        ? " placing it in the bottom 15% of resumes analyzed."
+                        : analysis.overall_score < 50
+                        ? " indicating significant room for improvement."
+                        : analysis.overall_score < 70
+                        ? " showing a competitive foundation with optimization opportunities."
+                        : " demonstrating strong positioning in the market."}
+                    </p>
+                    <p>
+                      {analysis.headline}. The primary issues
                       are structural rather than experiential — meaning the underlying
-                      experience has potential, but presentation is actively harming your
-                      candidacy.
+                      experience has potential, but presentation {analysis.overall_score < 50 ? "is actively harming" : "could better support"} your candidacy.
                     </p>
                     <p>
-                      Key finding: Your resume is being filtered by ATS systems before
-                      reaching human review in approximately 85% of applications. This
-                      explains the silence despite volume of applications.
-                    </p>
-                    <p>
-                      Estimated effort to reach 70+ score: <strong className="text-foreground">8-12 hours</strong> of focused
-                      revision following this roadmap. Most improvements are one-time
-                      investments that compound across all future applications.
+                      Estimated effort to reach 70+ score: <strong className="text-foreground">
+                        {analysis.overall_score < 30 ? "8-12 hours" : analysis.overall_score < 50 ? "4-6 hours" : "2-3 hours"}
+                      </strong> of focused revision following this roadmap.
                     </p>
                   </div>
 
                   <div className="mt-8 grid gap-4 md:grid-cols-3">
                     <div className="rounded-lg border border-border p-4 text-center">
-                      <p className="text-3xl font-bold text-destructive">29</p>
+                      <p className={`text-3xl font-bold ${getScoreColor(analysis.overall_score)}`}>
+                        {analysis.overall_score}
+                      </p>
                       <p className="text-sm text-muted-foreground">Current Score</p>
                     </div>
                     <div className="rounded-lg border border-border p-4 text-center">
@@ -219,7 +211,9 @@ export default function ReportPage() {
                       <p className="text-sm text-muted-foreground">Target Score</p>
                     </div>
                     <div className="rounded-lg border border-border p-4 text-center">
-                      <p className="text-3xl font-bold text-foreground">8-12h</p>
+                      <p className="text-3xl font-bold text-foreground">
+                        {analysis.overall_score < 30 ? "8-12h" : analysis.overall_score < 50 ? "4-6h" : "2-3h"}
+                      </p>
                       <p className="text-sm text-muted-foreground">Est. Revision Time</p>
                     </div>
                   </div>
@@ -253,11 +247,9 @@ export default function ReportPage() {
                                 : "text-warning"
                             )}
                           />
-                          <h3 className="font-semibold text-foreground">{cause.title}</h3>
                           <Badge
                             variant="secondary"
                             className={cn(
-                              "ml-auto",
                               cause.severity === "critical"
                                 ? "bg-destructive/10 text-destructive"
                                 : "bg-warning/10 text-warning"
@@ -271,6 +263,29 @@ export default function ReportPage() {
                         </p>
                       </div>
                     ))}
+                  </div>
+
+                  {/* Category Feedback */}
+                  <div className="mt-8 space-y-4">
+                    <h3 className="font-semibold text-foreground">Category Insights</h3>
+                    <div className="space-y-3">
+                      <div className="rounded-lg border border-border p-4">
+                        <p className="font-medium text-foreground">ATS Compatibility ({analysis.categories.ats_compatibility.score}/20)</p>
+                        <p className="mt-1 text-sm text-muted-foreground">{analysis.categories.ats_compatibility.feedback}</p>
+                      </div>
+                      <div className="rounded-lg border border-border p-4">
+                        <p className="font-medium text-foreground">Content Strength ({analysis.categories.content_strength.score}/40)</p>
+                        <p className="mt-1 text-sm text-muted-foreground">{analysis.categories.content_strength.feedback}</p>
+                      </div>
+                      <div className="rounded-lg border border-border p-4">
+                        <p className="font-medium text-foreground">Writing & Clarity ({analysis.categories.writing_clarity.score}/10)</p>
+                        <p className="mt-1 text-sm text-muted-foreground">{analysis.categories.writing_clarity.feedback}</p>
+                      </div>
+                      <div className="rounded-lg border border-border p-4">
+                        <p className="font-medium text-foreground">Job Match ({analysis.categories.job_match.score}/25)</p>
+                        <p className="mt-1 text-sm text-muted-foreground">{analysis.categories.job_match.feedback}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -288,7 +303,11 @@ export default function ReportPage() {
                       <p className="mt-2">
                         In 2024, 75% of Fortune 500 companies use ATS systems that filter out
                         70-80% of applications before human review. Your current formatting
-                        triggers multiple filter flags.
+                        {analysis.categories.ats_compatibility.score < 10 
+                          ? " triggers multiple filter flags."
+                          : analysis.categories.ats_compatibility.score < 15
+                          ? " has some compatibility issues."
+                          : " is reasonably compatible."}
                       </p>
                     </div>
 
@@ -309,6 +328,19 @@ export default function ReportPage() {
                         who spend an average of 6-7 seconds on initial review.
                       </p>
                     </div>
+
+                    {analysis.rebuild_roadmap.keyword_gaps.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold text-foreground">Missing Keywords in Your Resume</h3>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {analysis.rebuild_roadmap.keyword_gaps.map((keyword, index) => (
+                            <Badge key={index} variant="secondary" className="bg-destructive/10 text-destructive">
+                              {keyword}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

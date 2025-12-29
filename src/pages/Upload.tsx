@@ -3,13 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { Upload, FileText, Loader2 } from "lucide-react";
+import { Upload, FileText, Loader2, AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { extractResumeText } from "@/lib/pdf-parser";
+import { supabase } from "@/integrations/supabase/client";
+import { useAnalysisStore } from "@/stores/analysis-store";
 
 export default function UploadPage() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisStage, setAnalysisStage] = useState("");
+  const setAnalysis = useAnalysisStore((state) => state.setAnalysis);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -37,14 +44,51 @@ export default function UploadPage() {
     }
   }, []);
 
-  const handleAnalyze = useCallback(() => {
+  const handleAnalyze = useCallback(async () => {
     if (!file) return;
+    
     setIsAnalyzing(true);
-    // Simulate analysis
-    setTimeout(() => {
+    setAnalysisStage("Extracting text from resume...");
+
+    try {
+      // Step 1: Extract text from the file
+      const resumeText = await extractResumeText(file);
+      
+      if (resumeText.length < 50) {
+        throw new Error("Could not extract enough text from the resume. Please ensure the file contains readable text.");
+      }
+
+      setAnalysisStage("AI analyzing hiring signals...");
+
+      // Step 2: Send to AI for analysis
+      const { data, error } = await supabase.functions.invoke("analyze-resume", {
+        body: { resumeText },
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || "Analysis failed");
+      }
+
+      // Step 3: Store the analysis and navigate
+      setAnalysis(data.analysis);
       navigate("/score");
-    }, 2500);
-  }, [file, navigate]);
+
+    } catch (error) {
+      console.error("Analysis error:", error);
+      toast({
+        title: "Analysis failed",
+        description: error instanceof Error ? error.message : "Unable to analyze resume. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+      setAnalysisStage("");
+    }
+  }, [file, navigate, setAnalysis, toast]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -100,7 +144,7 @@ export default function UploadPage() {
                   </div>
                   <input
                     type="file"
-                    accept=".pdf,.doc,.docx"
+                    accept=".pdf,.doc,.docx,.txt"
                     onChange={handleFileSelect}
                     className="absolute inset-0 cursor-pointer opacity-0"
                   />
@@ -109,8 +153,15 @@ export default function UploadPage() {
             </div>
 
             <p className="mt-4 text-center text-xs text-muted-foreground">
-              Supported formats: PDF, DOC, DOCX
+              Supported formats: PDF, DOC, DOCX, TXT
             </p>
+
+            {isAnalyzing && analysisStage && (
+              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>{analysisStage}</span>
+              </div>
+            )}
 
             <Button
               onClick={handleAnalyze}
@@ -122,12 +173,25 @@ export default function UploadPage() {
               {isAnalyzing ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  AI analyzing...
+                  Analyzing...
                 </>
               ) : (
                 "Run AI Analysis"
               )}
             </Button>
+
+            <div className="mt-6 rounded-lg border border-border bg-card p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                <div className="text-xs text-muted-foreground">
+                  <p className="font-medium text-foreground">Privacy Note</p>
+                  <p className="mt-1">
+                    Your resume is processed securely and not stored permanently. 
+                    Analysis is performed in real-time and results are kept only for your session.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
