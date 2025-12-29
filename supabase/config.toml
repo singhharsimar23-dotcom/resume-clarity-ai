@@ -1,0 +1,6 @@
+[project]
+id = "resumeai"
+name = "ResumeAI"
+
+[functions.create-payment]
+verify_jwt = false

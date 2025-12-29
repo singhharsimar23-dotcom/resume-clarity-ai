@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,10 @@ import {
   CheckSquare,
   Download,
   ChevronRight,
+  CheckCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 const navItems = [
   { id: "summary", label: "Summary", icon: FileText },
@@ -117,12 +120,32 @@ const actionItems = [
 
 export default function ReportPage() {
   const [activeSection, setActiveSection] = useState("summary");
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (searchParams.get("payment") === "success") {
+      toast({
+        title: "Payment successful",
+        description: "Your Pro AI Analysis is now unlocked. Explore your rebuild roadmap below.",
+      });
+    }
+  }, [searchParams, toast]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1">
         <div className="container py-8">
+          {searchParams.get("payment") === "success" && (
+            <div className="mb-6 flex items-center gap-3 rounded-lg border border-success/30 bg-success/10 p-4">
+              <CheckCircle className="h-5 w-5 text-success" />
+              <p className="text-sm text-foreground">
+                Payment confirmed. Your full Pro AI Analysis is now available.
+              </p>
+            </div>
+          )}
+
           <div className="flex items-center justify-between">
             <div>
               <Badge variant="secondary" className="mb-2 bg-accent/10 text-accent">
