@@ -4,3 +4,6 @@ name = "ResumeAI"
 
 [functions.create-payment]
 verify_jwt = false
+
+[functions.analyze-resume]
+verify_jwt = false
