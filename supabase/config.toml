@@ -1,9 +1,1 @@
-[project]
-id = "resumeai"
-name = "ResumeAI"
-
-[functions.create-payment]
-verify_jwt = false
-
-[functions.analyze-resume]
-verify_jwt = false
+project_id = "qdmclpiizkhvhwzjsyzu"
