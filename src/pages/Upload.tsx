@@ -8,10 +8,12 @@ import { useToast } from "@/hooks/use-toast";
 import { extractResumeText } from "@/lib/pdf-parser";
 import { supabase } from "@/integrations/supabase/client";
 import { useAnalysisStore } from "@/stores/analysis-store";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function UploadPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -44,6 +46,28 @@ export default function UploadPage() {
     }
   }, []);
 
+  const saveAnalysisToHistory = async (analysisData: any, fileName: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase.from('analysis_history').insert({
+        user_id: user.id,
+        file_name: fileName,
+        overall_score: analysisData.overallScore,
+        ats_score: analysisData.scores.ats,
+        content_score: analysisData.scores.content,
+        format_score: analysisData.scores.format,
+        analysis_data: analysisData,
+      });
+
+      if (error) {
+        console.error('Error saving analysis:', error);
+      }
+    } catch (error) {
+      console.error('Error saving analysis to history:', error);
+    }
+  };
+
   const handleAnalyze = useCallback(async () => {
     if (!file) return;
     
@@ -73,8 +97,17 @@ export default function UploadPage() {
         throw new Error(data?.error || "Analysis failed");
       }
 
-      // Step 3: Store the analysis and navigate
-      setAnalysis(data.analysis);
+      // Step 3: Save to history if user is logged in
+      if (user) {
+        await saveAnalysisToHistory(data.analysis, file.name);
+        toast({
+          title: "Analysis saved",
+          description: "Your analysis has been saved to your history.",
+        });
+      }
+
+      // Step 4: Store the analysis and navigate
+      setAnalysis(data.analysis, file.name);
       navigate("/score");
 
     } catch (error) {
@@ -88,7 +121,7 @@ export default function UploadPage() {
       setIsAnalyzing(false);
       setAnalysisStage("");
     }
-  }, [file, navigate, setAnalysis, toast]);
+  }, [file, navigate, setAnalysis, toast, user]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -179,6 +212,12 @@ export default function UploadPage() {
                 "Run AI Analysis"
               )}
             </Button>
+
+            {!user && (
+              <p className="mt-4 text-center text-sm text-muted-foreground">
+                <a href="/auth" className="text-accent hover:underline">Sign in</a> to save your analysis history
+              </p>
+            )}
 
             <div className="mt-6 rounded-lg border border-border bg-card p-4">
               <div className="flex items-start gap-3">
