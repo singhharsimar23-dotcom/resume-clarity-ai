@@ -50,6 +50,63 @@ export type Database = {
         }
         Relationships: []
       }
+      career_reality_checks: {
+        Row: {
+          biggest_constraint: string | null
+          created_at: string
+          hidden_risks: Json
+          id: string
+          interview_probability: number
+          interview_reasoning: string
+          recommendation_action: string
+          recommendation_message: string
+          role_fit_explanation: string
+          role_fit_verdict: string
+          target_market: string
+          target_role: string
+          timeline: string | null
+          top_fixes: Json
+          user_id: string
+          years_experience: string | null
+        }
+        Insert: {
+          biggest_constraint?: string | null
+          created_at?: string
+          hidden_risks?: Json
+          id?: string
+          interview_probability: number
+          interview_reasoning: string
+          recommendation_action: string
+          recommendation_message: string
+          role_fit_explanation: string
+          role_fit_verdict: string
+          target_market: string
+          target_role: string
+          timeline?: string | null
+          top_fixes?: Json
+          user_id: string
+          years_experience?: string | null
+        }
+        Update: {
+          biggest_constraint?: string | null
+          created_at?: string
+          hidden_risks?: Json
+          id?: string
+          interview_probability?: number
+          interview_reasoning?: string
+          recommendation_action?: string
+          recommendation_message?: string
+          role_fit_explanation?: string
+          role_fit_verdict?: string
+          target_market?: string
+          target_role?: string
+          timeline?: string | null
+          top_fixes?: Json
+          user_id?: string
+          years_experience?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

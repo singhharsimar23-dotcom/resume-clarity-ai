@@ -16,6 +16,7 @@ import History from "./pages/History";
 import Dashboard from "./pages/Dashboard";
 import Resumes from "./pages/Resumes";
 import ResumeEditor from "./pages/ResumeEditor";
+import CareerRealityCheck from "./pages/CareerRealityCheck";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/resumes" element={<Resumes />} />
             <Route path="/builder/new" element={<ResumeEditor />} />
             <Route path="/builder/:id" element={<ResumeEditor />} />
+            <Route path="/career-reality-check" element={<CareerRealityCheck />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
