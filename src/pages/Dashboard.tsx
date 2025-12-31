@@ -6,18 +6,17 @@ import { Card } from '@/components/ui/card';
 import { 
   FileText, 
   Plus, 
-  TrendingUp, 
   Target, 
   Clock,
   CheckCircle,
   ArrowRight,
-  Upload
+  Upload,
+  Compass
 } from 'lucide-react';
 import { useResumeStore } from '@/stores/resume-store';
 import { useAnalysisStore } from '@/stores/analysis-store';
 import { ScoreBadge } from '@/components/builder/ScoreBadge';
 import { useAuth } from '@/contexts/AuthContext';
-import { CareerCheckSection } from '@/components/career-check/CareerCheckSection';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -172,8 +171,26 @@ export default function Dashboard() {
               </Card>
             )}
 
-            {/* Career Reality Check */}
-            <CareerCheckSection resumeText={resumeText} />
+            {/* Career Reality Check CTA */}
+            <Card className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                  <Compass className="h-5 w-5 text-accent" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground">Career Reality Check</h3>
+                  <p className="text-sm text-muted-foreground">How does the market see you?</p>
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Get an honest assessment of your job prospects based on your resume and target role.
+              </p>
+              <Button variant="outline" className="w-full" onClick={() => navigate('/career-reality-check')}>
+                Start Assessment
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Card>
+
             {resumes.length === 0 && (
               <Card className="p-12 text-center">
                 <div className="flex flex-col items-center gap-4">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { DatePicker } from '@/components/ui/date-picker';
 import type { SectionType, Education, Experience, Project, Certification, Award, Skill, Leadership, Research, Publication } from '@/types/builder';
 
 interface SectionFormModalProps {
@@ -111,24 +112,16 @@ export function SectionFormModal({
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="startDate">Start Date *</Label>
-                <Input
-                  id="startDate"
-                  type="month"
-                  value={formData.startDate || ''}
-                  onChange={(e) => handleChange('startDate', e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="endDate">End Date *</Label>
-                <Input
-                  id="endDate"
-                  type="month"
-                  value={formData.endDate || ''}
-                  onChange={(e) => handleChange('endDate', e.target.value)}
-                />
-              </div>
+              <DatePicker
+                label="Start Date *"
+                value={formData.startDate || ''}
+                onChange={(value) => handleChange('startDate', value)}
+              />
+              <DatePicker
+                label="End Date *"
+                value={formData.endDate || ''}
+                onChange={(value) => handleChange('endDate', value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="gpa">GPA (optional)</Label>
@@ -175,25 +168,17 @@ export function SectionFormModal({
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="startDate">Start Date *</Label>
-                <Input
-                  id="startDate"
-                  type="month"
-                  value={formData.startDate || ''}
-                  onChange={(e) => handleChange('startDate', e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="endDate">End Date</Label>
-                <Input
-                  id="endDate"
-                  type="month"
-                  value={formData.endDate || ''}
-                  onChange={(e) => handleChange('endDate', e.target.value)}
-                  disabled={formData.current}
-                />
-              </div>
+              <DatePicker
+                label="Start Date *"
+                value={formData.startDate || ''}
+                onChange={(value) => handleChange('startDate', value)}
+              />
+              <DatePicker
+                label="End Date"
+                value={formData.endDate || ''}
+                onChange={(value) => handleChange('endDate', value)}
+                disabled={formData.current}
+              />
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox
