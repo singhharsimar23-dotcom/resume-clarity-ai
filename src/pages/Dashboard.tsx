@@ -17,12 +17,13 @@ import { useResumeStore } from '@/stores/resume-store';
 import { useAnalysisStore } from '@/stores/analysis-store';
 import { ScoreBadge } from '@/components/builder/ScoreBadge';
 import { useAuth } from '@/contexts/AuthContext';
+import { CareerCheckSection } from '@/components/career-check/CareerCheckSection';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { resumes } = useResumeStore();
-  const { analysis } = useAnalysisStore();
+  const { analysis, resumeText } = useAnalysisStore();
 
   const sortedResumes = [...resumes].sort(
     (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
@@ -171,7 +172,8 @@ export default function Dashboard() {
               </Card>
             )}
 
-            {/* Empty State */}
+            {/* Career Reality Check */}
+            <CareerCheckSection resumeText={resumeText} />
             {resumes.length === 0 && (
               <Card className="p-12 text-center">
                 <div className="flex flex-col items-center gap-4">

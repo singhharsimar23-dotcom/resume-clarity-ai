@@ -106,8 +106,8 @@ export default function UploadPage() {
         });
       }
 
-      // Step 4: Store the analysis and navigate
-      setAnalysis(data.analysis, file.name);
+      // Step 4: Store the analysis (with resume text for Career Reality Check) and navigate
+      setAnalysis(data.analysis, file.name, resumeText);
       navigate("/score");
 
     } catch (error) {
