@@ -1,1 +1,10 @@
 project_id = "qdmclpiizkhvhwzjsyzu"
+
+[functions.analyze-resume]
+verify_jwt = false
+
+[functions.career-reality-check]
+verify_jwt = false
+
+[functions.create-payment]
+verify_jwt = false
