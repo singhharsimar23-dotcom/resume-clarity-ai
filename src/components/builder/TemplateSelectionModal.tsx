@@ -8,16 +8,18 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, FileText } from 'lucide-react';
+import { Check } from 'lucide-react';
 import type { ResumeTemplate } from '@/types/builder';
 
-const templates: ResumeTemplate[] = [
+const templates: (ResumeTemplate & { image: string; description: string })[] = [
   {
     id: 'software-engineer',
     name: 'Software Engineer',
     role: 'Software Engineer',
     layout: 'standard',
     isAtsOptimized: true,
+    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&q=80',
+    description: 'Optimized for technical roles, highlighting projects and skills',
   },
   {
     id: 'data-analyst',
@@ -25,6 +27,8 @@ const templates: ResumeTemplate[] = [
     role: 'Data Analyst',
     layout: 'standard',
     isAtsOptimized: true,
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80',
+    description: 'Focused on metrics, analytics tools, and business impact',
   },
   {
     id: 'product-manager',
@@ -32,6 +36,8 @@ const templates: ResumeTemplate[] = [
     role: 'Product Manager',
     layout: 'standard',
     isAtsOptimized: true,
+    image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&q=80',
+    description: 'Emphasizes strategy, roadmaps, and cross-functional leadership',
   },
   {
     id: 'marketing',
@@ -39,6 +45,8 @@ const templates: ResumeTemplate[] = [
     role: 'Marketing Specialist',
     layout: 'standard',
     isAtsOptimized: true,
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80',
+    description: 'Showcases campaigns, growth metrics, and creative skills',
   },
   {
     id: 'general-ats',
@@ -46,6 +54,8 @@ const templates: ResumeTemplate[] = [
     role: 'General',
     layout: 'standard',
     isAtsOptimized: true,
+    image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&q=80',
+    description: 'Universal format optimized for all applicant tracking systems',
   },
   {
     id: 'compact',
@@ -53,6 +63,8 @@ const templates: ResumeTemplate[] = [
     role: 'General',
     layout: 'compact',
     isAtsOptimized: true,
+    image: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&q=80',
+    description: 'Dense layout for extensive experience in limited space',
   },
 ];
 
@@ -73,16 +85,20 @@ export function TemplateSelectionModal({
   const handleApply = () => {
     const template = templates.find((t) => t.id === selectedTemplate);
     if (template) {
-      onSelect({ ...template, layout });
+      const { image, description, ...baseTemplate } = template;
+      onSelect({ ...baseTemplate, layout });
       onOpenChange(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">Choose a Template</DialogTitle>
+          <p className="text-sm text-muted-foreground">
+            Select a template optimized for your target role
+          </p>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
@@ -110,31 +126,41 @@ export function TemplateSelectionModal({
               <button
                 key={template.id}
                 onClick={() => setSelectedTemplate(template.id)}
-                className={`relative p-4 rounded-lg border-2 transition-all text-left ${
+                className={`group relative rounded-xl border-2 transition-all text-left overflow-hidden ${
                   selectedTemplate === template.id
-                    ? 'border-accent bg-accent/5'
+                    ? 'border-accent ring-2 ring-accent/20'
                     : 'border-border hover:border-muted-foreground/50'
                 }`}
               >
                 {selectedTemplate === template.id && (
-                  <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-accent flex items-center justify-center">
-                    <Check className="h-3 w-3 text-accent-foreground" />
+                  <div className="absolute top-3 right-3 z-20 h-6 w-6 rounded-full bg-accent flex items-center justify-center shadow-lg">
+                    <Check className="h-4 w-4 text-accent-foreground" />
                   </div>
                 )}
 
-                {/* Mini Preview */}
-                <div className="aspect-[8.5/11] bg-secondary rounded-md mb-3 flex items-center justify-center">
-                  <FileText className="h-8 w-8 text-muted-foreground/50" />
+                {/* Image Preview */}
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <img
+                    src={template.image}
+                    alt={template.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
                 </div>
 
-                <div className="space-y-1.5">
-                  <h4 className="font-medium text-sm text-foreground">{template.name}</h4>
-                  <p className="text-xs text-muted-foreground">{template.role}</p>
-                  {template.isAtsOptimized && (
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                      ATS Optimized
-                    </Badge>
-                  )}
+                {/* Content */}
+                <div className="p-4 bg-card">
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <h4 className="font-semibold text-sm text-foreground">{template.name}</h4>
+                    {template.isAtsOptimized && (
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0 shrink-0">
+                        ATS
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground line-clamp-2">
+                    {template.description}
+                  </p>
                 </div>
               </button>
             ))}
