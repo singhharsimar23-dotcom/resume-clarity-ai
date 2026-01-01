@@ -50,21 +50,26 @@ export default function UploadPage() {
     if (!user) return;
 
     try {
-      const { error } = await supabase.from('analysis_history').insert({
+      const atsScore = Math.round(((analysisData.categories?.ats_compatibility?.score ?? 0) / 20) * 100);
+      const contentScore = Math.round(((analysisData.categories?.content_strength?.score ?? 0) / 40) * 100);
+      // Table column is named format_score; we store writing/format clarity here.
+      const formatScore = Math.round(((analysisData.categories?.writing_clarity?.score ?? 0) / 10) * 100);
+
+      const { error } = await supabase.from("analysis_history").insert({
         user_id: user.id,
         file_name: fileName,
-        overall_score: analysisData.overallScore,
-        ats_score: analysisData.scores.ats,
-        content_score: analysisData.scores.content,
-        format_score: analysisData.scores.format,
+        overall_score: analysisData.overall_score,
+        ats_score: atsScore,
+        content_score: contentScore,
+        format_score: formatScore,
         analysis_data: analysisData,
       });
 
       if (error) {
-        console.error('Error saving analysis:', error);
+        console.error("Error saving analysis:", error);
       }
     } catch (error) {
-      console.error('Error saving analysis to history:', error);
+      console.error("Error saving analysis to history:", error);
     }
   };
 

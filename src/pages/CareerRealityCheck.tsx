@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -60,8 +60,9 @@ const CONSTRAINT_OPTIONS = [
 
 export default function CareerRealityCheckPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
-  const { resumeText, analysis } = useAnalysisStore();
+  const { resumeText } = useAnalysisStore();
   const { toast } = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -84,6 +85,45 @@ export default function CareerRealityCheckPage() {
       fetchPastResults();
     }
   }, [user]);
+
+  useEffect(() => {
+    const id = searchParams.get('id');
+    if (!id || !user) return;
+
+    // Load a specific saved assessment (deep-link from History)
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('career_reality_checks')
+          .select('*')
+          .eq('id', id)
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!data) return;
+
+        setTargetRole(data.target_role);
+        setTargetMarket(data.target_market);
+        setYearsExperience(data.years_experience || '');
+        setBiggestConstraint(data.biggest_constraint || '');
+        setTimeline(data.timeline || '');
+
+        const verdict = data.role_fit_verdict as CareerCheckResult['role_fit']['verdict'];
+        const action = data.recommendation_action as CareerCheckResult['recommendation']['action'];
+
+        setResult({
+          role_fit: { verdict, explanation: data.role_fit_explanation },
+          interview_probability: { percentage: data.interview_probability, reasoning: data.interview_reasoning },
+          recommendation: { action, message: data.recommendation_message },
+          hidden_risks: data.hidden_risks as unknown as CareerCheckResult['hidden_risks'],
+          top_fixes: data.top_fixes as unknown as CareerCheckResult['top_fixes'],
+        });
+      } catch (e) {
+        console.error('Error loading saved assessment:', e);
+      }
+    })();
+  }, [searchParams, user]);
 
   const fetchPastResults = async () => {
     if (!user) return;
