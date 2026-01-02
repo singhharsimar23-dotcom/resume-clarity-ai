@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 
 export function LandingHero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Video Background */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
+      {/* Video Background - Light, human-focused */}
       <div className="absolute inset-0 z-0">
         <video
           autoPlay
@@ -14,16 +14,16 @@ export function LandingHero() {
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
-          poster="https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920&q=80"
+          poster="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1920&q=80"
         >
           <source
-            src="https://videos.pexels.com/video-files/3129671/3129671-uhd_2560_1440_30fps.mp4"
+            src="https://videos.pexels.com/video-files/5439528/5439528-uhd_2560_1440_24fps.mp4"
             type="video/mp4"
           />
         </video>
-        {/* Dark overlay with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-black/90" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
+        {/* Light overlay with soft gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/85 via-white/75 to-white/90" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/40 via-transparent to-white/40" />
       </div>
 
       {/* Content */}
@@ -39,22 +39,22 @@ export function LandingHero() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-white/80 backdrop-blur-sm mb-8 shadow-sm"
           >
-            <Shield className="h-4 w-4 text-accent" />
-            <span className="text-sm text-white/80">Powered by Advanced AI Analysis</span>
+            <Shield className="h-4 w-4 text-emerald-600" />
+            <span className="text-sm text-slate-700">Powered by Advanced AI Analysis</span>
           </motion.div>
 
           {/* Main headline */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight mb-6">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight tracking-tight mb-6">
             Your Resume Is Being
-            <span className="block bg-gradient-to-r from-accent via-teal-300 to-accent bg-clip-text text-transparent">
+            <span className="block bg-gradient-to-r from-slate-800 via-slate-600 to-slate-800 bg-clip-text text-transparent">
               Silently Rejected
             </span>
           </h1>
 
           {/* Subheadline */}
-          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
             98% of resumes fail ATS systems before a human ever sees them.
             Our AI reveals exactly why yours is invisible — and how to fix it.
           </p>
@@ -69,7 +69,7 @@ export function LandingHero() {
             <Button
               asChild
               size="lg"
-              className="bg-accent hover:bg-accent/90 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-accent/20 transition-all hover:shadow-accent/40 hover:scale-105"
+              className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-slate-900/10 transition-all hover:shadow-slate-900/20 hover:scale-105"
             >
               <Link to="/upload">
                 Analyze My Resume
@@ -80,7 +80,7 @@ export function LandingHero() {
               asChild
               variant="outline"
               size="lg"
-              className="border-white/30 bg-white/5 text-white hover:bg-white/10 hover:border-white/50 px-8 py-6 text-lg rounded-xl backdrop-blur-sm"
+              className="border-slate-300 bg-white/80 text-slate-800 hover:bg-slate-50 hover:border-slate-400 px-8 py-6 text-lg rounded-xl backdrop-blur-sm"
             >
               <Link to="/auth">
                 Sign Up Free
@@ -93,19 +93,19 @@ export function LandingHero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-white/10"
+            className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-slate-200/60"
           >
             <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-white">98%</p>
-              <p className="text-sm text-white/50 mt-1">Fail ATS Silently</p>
+              <p className="text-3xl md:text-4xl font-bold text-slate-900">98%</p>
+              <p className="text-sm text-slate-500 mt-1">Fail ATS Silently</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-white">7 sec</p>
-              <p className="text-sm text-white/50 mt-1">Average Review Time</p>
+              <p className="text-3xl md:text-4xl font-bold text-slate-900">7 sec</p>
+              <p className="text-sm text-slate-500 mt-1">Average Review Time</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-white">250+</p>
-              <p className="text-sm text-white/50 mt-1">Applications Per Role</p>
+              <p className="text-3xl md:text-4xl font-bold text-slate-900">250+</p>
+              <p className="text-sm text-slate-500 mt-1">Applications Per Role</p>
             </div>
           </motion.div>
         </motion.div>
@@ -118,11 +118,11 @@ export function LandingHero() {
         transition={{ delay: 1, duration: 0.5 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
       >
-        <div className="w-6 h-10 rounded-full border-2 border-white/30 flex justify-center pt-2">
+        <div className="w-6 h-10 rounded-full border-2 border-slate-300 flex justify-center pt-2">
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            className="w-1.5 h-1.5 rounded-full bg-white/60"
+            className="w-1.5 h-1.5 rounded-full bg-slate-400"
           />
         </div>
       </motion.div>
