@@ -3,6 +3,7 @@ import { Footer } from "@/components/layout/Footer";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
+import { ResumeDemoSection } from "@/components/landing/ResumeDemoSection";
 import { RealityScoreSection } from "@/components/landing/RealityScoreSection";
 import { BeforeAfterSection } from "@/components/landing/BeforeAfterSection";
 import { WhoIsThisFor } from "@/components/landing/WhoIsThisFor";
@@ -11,12 +12,13 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-white">
       <Header />
       <main className="flex-1">
         <LandingHero />
         <ProblemSection />
         <FeaturesGrid />
+        <ResumeDemoSection />
         <RealityScoreSection />
         <BeforeAfterSection />
         <WhoIsThisFor />
