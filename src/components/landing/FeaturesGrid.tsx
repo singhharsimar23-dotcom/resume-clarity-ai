@@ -63,7 +63,7 @@ const features = [
 
 export function FeaturesGrid() {
   return (
-    <section className="relative py-24 md:py-32 bg-secondary/30 overflow-hidden">
+    <section id="intelligence-layers" className="relative py-24 md:py-32 bg-secondary/30 overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(45,212,191,0.05),transparent_70%)]" />
       
       <div className="container relative z-10 mx-auto px-6">

@@ -30,7 +30,7 @@ const problems = [
 
 export function ProblemSection() {
   return (
-    <section className="relative py-24 md:py-32 bg-background overflow-hidden">
+    <section id="how-it-works" className="relative py-24 md:py-32 bg-background overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/5 to-transparent dark:from-black/50" />
       
