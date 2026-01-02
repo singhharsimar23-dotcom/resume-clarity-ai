@@ -4,6 +4,7 @@ import { LandingHero } from "@/components/landing/LandingHero";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
 import { ResumeDemoSection } from "@/components/landing/ResumeDemoSection";
+import { BuildResumeSection } from "@/components/landing/BuildResumeSection";
 import { RealityScoreSection } from "@/components/landing/RealityScoreSection";
 import { BeforeAfterSection } from "@/components/landing/BeforeAfterSection";
 import { WhoIsThisFor } from "@/components/landing/WhoIsThisFor";
@@ -19,6 +20,7 @@ const Index = () => {
         <ProblemSection />
         <FeaturesGrid />
         <ResumeDemoSection />
+        <BuildResumeSection />
         <RealityScoreSection />
         <BeforeAfterSection />
         <WhoIsThisFor />

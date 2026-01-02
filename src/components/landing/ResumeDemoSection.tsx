@@ -88,7 +88,7 @@ export function ResumeDemoSection() {
   };
 
   return (
-    <section className="py-24 md:py-32 bg-white">
+    <section id="live-demo" className="py-24 md:py-32 bg-white">
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <motion.div

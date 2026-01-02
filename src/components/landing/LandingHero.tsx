@@ -5,25 +5,15 @@ import { motion } from "framer-motion";
 
 export function LandingHero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
-      {/* Video Background - Light, human-focused */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Gradient Background - Soft gray to graphite */}
       <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-          poster="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=1920&q=80"
-        >
-          <source
-            src="https://videos.pexels.com/video-files/5439528/5439528-uhd_2560_1440_24fps.mp4"
-            type="video/mp4"
-          />
-        </video>
-        {/* Light overlay with soft gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/85 via-white/75 to-white/90" />
-        <div className="absolute inset-0 bg-gradient-to-r from-white/40 via-transparent to-white/40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-slate-100 to-slate-200" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100/50 via-transparent to-slate-200/60" />
+        {/* Subtle texture overlay */}
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+        }} />
       </div>
 
       {/* Content */}
@@ -32,79 +22,88 @@ export function LandingHero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-4xl mx-auto text-center"
+          className="max-w-4xl mx-auto"
         >
-          {/* Trust badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-white/80 backdrop-blur-sm mb-8 shadow-sm"
-          >
-            <Shield className="h-4 w-4 text-emerald-600" />
-            <span className="text-sm text-slate-700">Powered by Advanced AI Analysis</span>
-          </motion.div>
+          {/* Glass panel container */}
+          <div className="relative rounded-3xl p-8 md:p-12 lg:p-16">
+            {/* Glass background */}
+            <div className="absolute inset-0 rounded-3xl bg-white/40 backdrop-blur-xl border border-white/50 shadow-xl shadow-slate-200/20" />
+            
+            {/* Content inside glass */}
+            <div className="relative z-10 text-center">
+              {/* Trust badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200/80 bg-white/60 backdrop-blur-sm mb-8"
+              >
+                <Shield className="h-4 w-4 text-emerald-600" />
+                <span className="text-sm text-slate-600">Powered by Advanced AI Analysis</span>
+              </motion.div>
 
-          {/* Main headline */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-tight tracking-tight mb-6">
-            Your Resume Is Being
-            <span className="block bg-gradient-to-r from-slate-800 via-slate-600 to-slate-800 bg-clip-text text-transparent">
-              Silently Rejected
-            </span>
-          </h1>
+              {/* Main headline */}
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 leading-tight tracking-tight mb-6">
+                Your Resume Is Being
+                <span className="block text-slate-600">
+                  Silently Rejected
+                </span>
+              </h1>
 
-          {/* Subheadline */}
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-            98% of resumes fail ATS systems before a human ever sees them.
-            Our AI reveals exactly why yours is invisible — and how to fix it.
-          </p>
+              {/* Subheadline */}
+              <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+                98% of resumes fail ATS systems before a human ever sees them.
+                Our AI reveals exactly why yours is invisible — and how to fix it.
+              </p>
 
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Button
-              asChild
-              size="lg"
-              className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-slate-900/10 transition-all hover:shadow-slate-900/20 hover:scale-105"
-            >
-              <Link to="/upload">
-                Analyze My Resume
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="border-slate-300 bg-white/80 text-slate-800 hover:bg-slate-50 hover:border-slate-400 px-8 py-6 text-lg rounded-xl backdrop-blur-sm"
-            >
-              <Link to="/auth">
-                Sign Up Free
-              </Link>
-            </Button>
-          </motion.div>
+              {/* CTA Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              >
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-slate-700 hover:bg-slate-600 text-white px-8 py-6 text-lg rounded-xl shadow-lg shadow-slate-400/20 transition-all hover:shadow-slate-400/30 hover:scale-[1.02]"
+                >
+                  <Link to="/upload">
+                    Analyze My Resume
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="border-slate-300 bg-white/60 text-slate-700 hover:bg-white/80 hover:border-slate-400 px-8 py-6 text-lg rounded-xl backdrop-blur-sm"
+                >
+                  <Link to="/auth">
+                    Sign Up Free
+                  </Link>
+                </Button>
+              </motion.div>
+            </div>
+          </div>
 
-          {/* Stats row */}
+          {/* Stats row - outside glass panel */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-slate-200/60"
+            className="grid grid-cols-3 gap-8 mt-12 pt-8"
           >
             <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-slate-900">98%</p>
+              <p className="text-3xl md:text-4xl font-bold text-slate-700">98%</p>
               <p className="text-sm text-slate-500 mt-1">Fail ATS Silently</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-slate-900">7 sec</p>
+              <p className="text-3xl md:text-4xl font-bold text-slate-700">7 sec</p>
               <p className="text-sm text-slate-500 mt-1">Average Review Time</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-slate-900">250+</p>
+              <p className="text-3xl md:text-4xl font-bold text-slate-700">250+</p>
               <p className="text-sm text-slate-500 mt-1">Applications Per Role</p>
             </div>
           </motion.div>
