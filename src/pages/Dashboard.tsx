@@ -17,6 +17,7 @@ import { useResumeStore } from '@/stores/resume-store';
 import { useAnalysisStore } from '@/stores/analysis-store';
 import { ScoreBadge } from '@/components/builder/ScoreBadge';
 import { useAuth } from '@/contexts/AuthContext';
+import { TemplateBrowser } from '@/components/dashboard/TemplateBrowser';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -71,6 +72,9 @@ export default function Dashboard() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Template Browser - Main Create Resume Section */}
+            <TemplateBrowser />
+
             {/* Quick Actions */}
             <div className="grid sm:grid-cols-2 gap-4">
               <Card 
@@ -82,8 +86,8 @@ export default function Dashboard() {
                     <Plus className="h-6 w-6 text-accent" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">Create Resume</h3>
-                    <p className="text-sm text-muted-foreground">Start from scratch</p>
+                    <h3 className="font-semibold text-foreground">Start from Scratch</h3>
+                    <p className="text-sm text-muted-foreground">Create a blank resume</p>
                   </div>
                 </div>
               </Card>
