@@ -28,7 +28,7 @@ export default function AuthPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      navigate('/');
+      navigate('/dashboard', { replace: true });
     }
   }, [user, authLoading, navigate]);
 
@@ -85,7 +85,7 @@ export default function AuthPage() {
             title: 'Welcome back!',
             description: 'You have successfully logged in.',
           });
-          navigate('/');
+          navigate('/dashboard', { replace: true });
         }
       } else {
         const { error } = await signUp(email, password, fullName || undefined);
@@ -108,7 +108,7 @@ export default function AuthPage() {
             title: 'Account created!',
             description: 'You have successfully signed up and are now logged in.',
           });
-          navigate('/');
+          navigate('/dashboard', { replace: true });
         }
       }
     } finally {

@@ -11,13 +11,14 @@ import {
   CheckCircle,
   ArrowRight,
   Upload,
-  Compass
+  Compass,
+  LayoutGrid,
+  BarChart3
 } from 'lucide-react';
 import { useResumeStore } from '@/stores/resume-store';
 import { useAnalysisStore } from '@/stores/analysis-store';
 import { ScoreBadge } from '@/components/builder/ScoreBadge';
 import { useAuth } from '@/contexts/AuthContext';
-import { TemplateBrowser } from '@/components/dashboard/TemplateBrowser';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -72,11 +73,8 @@ export default function Dashboard() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Template Browser - Main Create Resume Section */}
-            <TemplateBrowser />
-
             {/* Quick Actions */}
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-3 gap-4">
               <Card 
                 className="p-6 cursor-pointer hover:shadow-md transition-all group"
                 onClick={() => navigate('/builder/new')}
@@ -86,8 +84,23 @@ export default function Dashboard() {
                     <Plus className="h-6 w-6 text-accent" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">Start from Scratch</h3>
-                    <p className="text-sm text-muted-foreground">Create a blank resume</p>
+                    <h3 className="font-semibold text-foreground">New Resume</h3>
+                    <p className="text-sm text-muted-foreground">Start from scratch</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card 
+                className="p-6 cursor-pointer hover:shadow-md transition-all group"
+                onClick={() => navigate('/templates')}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center group-hover:bg-secondary/80 transition-colors">
+                    <LayoutGrid className="h-6 w-6 text-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">Templates</h3>
+                    <p className="text-sm text-muted-foreground">Browse templates</p>
                   </div>
                 </div>
               </Card>
@@ -107,6 +120,26 @@ export default function Dashboard() {
                 </div>
               </Card>
             </div>
+
+            {/* Analysis CTA */}
+            <Card 
+              className="p-6 cursor-pointer hover:shadow-md transition-all group"
+              onClick={() => navigate('/analysis')}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center">
+                    <BarChart3 className="h-6 w-6 text-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">8-Point Analysis System</h3>
+                    <p className="text-sm text-muted-foreground">View how screening systems evaluate resumes</p>
+                  </div>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+              </div>
+            </Card>
+
 
             {/* Resume in Progress Widget */}
             {inProgressResumes.length > 0 && (
