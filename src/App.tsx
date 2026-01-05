@@ -17,6 +17,8 @@ import Dashboard from "./pages/Dashboard";
 import Resumes from "./pages/Resumes";
 import ResumeEditor from "./pages/ResumeEditor";
 import CareerRealityCheck from "./pages/CareerRealityCheck";
+import Templates from "./pages/Templates";
+import Analysis from "./pages/Analysis";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +42,8 @@ const App = () => (
             <Route path="/history" element={<History />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/resumes" element={<Resumes />} />
+            <Route path="/templates" element={<Templates />} />
+            <Route path="/analysis" element={<Analysis />} />
             <Route path="/builder/new" element={<ResumeEditor />} />
             <Route path="/builder/:id" element={<ResumeEditor />} />
             <Route path="/career-reality-check" element={<CareerRealityCheck />} />

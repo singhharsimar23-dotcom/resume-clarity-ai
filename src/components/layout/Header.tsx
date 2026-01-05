@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FileText, History, LogOut, User, LayoutDashboard, Files, Plus, Menu, X } from "lucide-react";
+import { FileText, History, LogOut, User, LayoutDashboard, Files, Plus, Menu, X, LayoutGrid, BarChart3 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   DropdownMenu,
@@ -80,11 +80,11 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <FileText className="h-4 w-4 text-primary-foreground" />
           </div>
-          <span className="text-lg font-semibold text-foreground">ResumeAI</span>
+          <span className="text-lg font-semibold text-foreground">HireMax AI</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -104,6 +104,20 @@ export function Header() {
               >
                 <Files className="h-4 w-4" />
                 Resumes
+              </Link>
+              <Link
+                to="/templates"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground flex items-center gap-1.5"
+              >
+                <LayoutGrid className="h-4 w-4" />
+                Templates
+              </Link>
+              <Link
+                to="/analysis"
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground flex items-center gap-1.5"
+              >
+                <BarChart3 className="h-4 w-4" />
+                Analysis
               </Link>
               <Link
                 to="/upload"
