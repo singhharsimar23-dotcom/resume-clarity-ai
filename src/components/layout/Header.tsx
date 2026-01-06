@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FileText, History, LogOut, User, LayoutDashboard, Files, Plus, Menu, X, LayoutGrid, BarChart3 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +22,7 @@ const landingSections = [
 
 export function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === "/";
   const { user, signOut, loading } = useAuth();
   const [activeSection, setActiveSection] = useState<string>("");
@@ -28,6 +30,7 @@ export function Header() {
 
   const handleSignOut = async () => {
     await signOut();
+    navigate('/', { replace: true });
   };
 
   // Smooth scroll to section
@@ -140,7 +143,7 @@ export function Header() {
                 >
                   {section.label}
                   {activeSection === section.id && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-700 rounded-full" />
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full" />
                   )}
                 </button>
               ))}
@@ -182,7 +185,9 @@ export function Header() {
           </div>
         )}
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          
           {/* Mobile menu button */}
           {isHome && !user && (
             <button

@@ -1,14 +1,15 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { Upload, FileText, Loader2, AlertCircle } from "lucide-react";
+import { Upload, FileText, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { extractResumeText } from "@/lib/pdf-parser";
 import { supabase } from "@/integrations/supabase/client";
 import { useAnalysisStore } from "@/stores/analysis-store";
 import { useAuth } from "@/contexts/AuthContext";
+import { AnalysisPipeline } from "@/components/upload/AnalysisPipeline";
 
 export default function UploadPage() {
   const navigate = useNavigate();
@@ -17,7 +18,8 @@ export default function UploadPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisStage, setAnalysisStage] = useState("");
+  const [analysisStage, setAnalysisStage] = useState(0);
+  const [stageSubLabel, setStageSubLabel] = useState("");
   const setAnalysis = useAnalysisStore((state) => state.setAnalysis);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -52,7 +54,6 @@ export default function UploadPage() {
     try {
       const atsScore = Math.round(((analysisData.categories?.ats_compatibility?.score ?? 0) / 20) * 100);
       const contentScore = Math.round(((analysisData.categories?.content_strength?.score ?? 0) / 40) * 100);
-      // Table column is named format_score; we store writing/format clarity here.
       const formatScore = Math.round(((analysisData.categories?.writing_clarity?.score ?? 0) / 10) * 100);
 
       const { error } = await supabase.from("analysis_history").insert({
@@ -77,19 +78,31 @@ export default function UploadPage() {
     if (!file) return;
     
     setIsAnalyzing(true);
-    setAnalysisStage("Extracting text from resume...");
+    setAnalysisStage(0);
+    setStageSubLabel("Personal info, Education, Experience...");
 
     try {
-      // Step 1: Extract text from the file
+      // Stage 1: Extraction
       const resumeText = await extractResumeText(file);
       
       if (resumeText.length < 50) {
         throw new Error("Could not extract enough text from the resume. Please ensure the file contains readable text.");
       }
 
-      setAnalysisStage("AI analyzing hiring signals...");
+      // Stage 2: Normalization
+      setAnalysisStage(1);
+      setStageSubLabel("Converting to internal format...");
+      await new Promise(resolve => setTimeout(resolve, 800));
 
-      // Step 2: Send to AI for analysis
+      // Stage 3: Preparation
+      setAnalysisStage(2);
+      setStageSubLabel("Building analysis context...");
+      await new Promise(resolve => setTimeout(resolve, 600));
+
+      // Stage 4: Diagnostics
+      setAnalysisStage(3);
+      setStageSubLabel("ATS survivability...");
+
       const { data, error } = await supabase.functions.invoke("analyze-resume", {
         body: { resumeText },
       });
@@ -102,7 +115,7 @@ export default function UploadPage() {
         throw new Error(data?.error || "Analysis failed");
       }
 
-      // Step 3: Save to history if user is logged in
+      // Save to history if user is logged in
       if (user) {
         await saveAnalysisToHistory(data.analysis, file.name);
         toast({
@@ -111,7 +124,7 @@ export default function UploadPage() {
         });
       }
 
-      // Step 4: Store the analysis (with resume text for Career Reality Check) and navigate
+      // Store the analysis and navigate
       setAnalysis(data.analysis, file.name, resumeText);
       navigate("/score");
 
@@ -122,15 +135,23 @@ export default function UploadPage() {
         description: error instanceof Error ? error.message : "Unable to analyze resume. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsAnalyzing(false);
-      setAnalysisStage("");
+      setAnalysisStage(0);
+      setStageSubLabel("");
     }
   }, [file, navigate, setAnalysis, toast, user]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
+      
+      {isAnalyzing && (
+        <AnalysisPipeline 
+          currentStage={analysisStage} 
+          subLabel={stageSubLabel} 
+        />
+      )}
+      
       <main className="flex flex-1 items-center justify-center py-16">
         <div className="container max-w-xl">
           <div className="text-center">
@@ -194,13 +215,6 @@ export default function UploadPage() {
               Supported formats: PDF, DOC, DOCX, TXT
             </p>
 
-            {isAnalyzing && analysisStage && (
-              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>{analysisStage}</span>
-              </div>
-            )}
-
             <Button
               onClick={handleAnalyze}
               disabled={!file || isAnalyzing}
@@ -208,14 +222,7 @@ export default function UploadPage() {
               size="xl"
               className="mt-8 w-full"
             >
-              {isAnalyzing ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Analyzing...
-                </>
-              ) : (
-                "Run AI Analysis"
-              )}
+              Run AI Analysis
             </Button>
 
             {!user && (
