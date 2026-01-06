@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { LandingHero } from "@/components/landing/LandingHero";
-import { ComparisonSection } from "@/components/landing/ComparisonSection";
+import { ScreeningPipeline } from "@/components/landing/ScreeningPipeline";
+import { ToolsComparison } from "@/components/landing/ToolsComparison";
 import { ProblemSection } from "@/components/landing/ProblemSection";
 import { FeaturesGrid } from "@/components/landing/FeaturesGrid";
 import { ResumeDemoSection } from "@/components/landing/ResumeDemoSection";
@@ -45,11 +46,12 @@ const Index = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1">
         <LandingHero />
-        <ComparisonSection />
+        <ScreeningPipeline />
+        <ToolsComparison />
         <ProblemSection />
         <FeaturesGrid />
         <ResumeDemoSection />
